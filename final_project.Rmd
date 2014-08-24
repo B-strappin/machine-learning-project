@@ -40,7 +40,7 @@ traindata <- traindata[complete.cases(traindata),]
 
 ##Fit a model to the processed training data
 Create a model with random forest for a better than linear regression model
-```{r}
+```{r, warning=FALSE}
 library("randomForest")
 modFit <- randomForest(classe ~ ., data=traindata)
 ```
