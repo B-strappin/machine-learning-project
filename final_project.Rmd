@@ -10,6 +10,7 @@ This project requires you to dive into a large dataset of exercise enthusiasts a
 
 I created my model with the randomForest() function in order to have a more robust solution compared to a linear regression approach. My resulting methodology resulted in a robust model with an estimated error rate of 0.31% using 500 trees with 7 variables tried at each split.
 
+However, the error rates are not the same for all activities. You can see a histogram showing this below.
 
 
 ##Download the data and libraries
@@ -62,6 +63,15 @@ modFit
 ```
 
 We can see that based on our training sample, we have a very well correlated and robust model with an error rate of 0.31% using 500 trees with 7 variables tried at each split.
+
+Show differences in error rate for consideration
+```{r, fig.height=6, fig.width=8}
+conf <- modFit$confusion
+confdata <- data.frame(row.names(conf)[1:5],conf[,"class.error"])
+names(confdata) <- c("Activity","Error.Rate")
+barplot(confdata$Error.Rate, main="Error Rates", xlab="Activity", ylab="Error Rate", 
+        names.arg=confdata$Activity,border="blue")
+```
 
 Create character vector of predictions
 ```{r}
