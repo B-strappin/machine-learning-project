@@ -63,15 +63,17 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <div id="summary" class="section level1">
 <h1>Summary</h1>
 <p>This project requires you to dive into a large dataset of exercise enthusiasts and create a model based on this data in order to determine what type of exercise an individual is doing based on the data that is being created by their human activity monitor.</p>
+<p>I created my model with the randomForest() function in order to have a more robust solution compared to a linear regression approach. My resulting methodology resulted in a robust model with an estimated error rate of 0.31% using 500 trees with 7 variables tried at each split.</p>
 <div id="download-the-data-and-libraries" class="section level2">
 <h2>Download the data and libraries</h2>
+<p>In order to work with the data, we needed to make sure the correct values in each column that were NA’s were actually read as NA’s and that none of the columns that were not supposed to be factors were not read as such.</p>
 <pre class="r"><code>library(data.table)
 traindata &lt;- read.csv(&quot;pml-training.csv&quot;, stringsAsFactors=FALSE, na.strings=c(&quot;NA&quot;,&quot;&quot;))
 testdata &lt;- read.csv(&quot;pml-testing.csv&quot;, stringsAsFactors=FALSE, na.strings=c(&quot;NA&quot;,&quot;&quot;))</code></pre>
 </div>
 <div id="process-the-data" class="section level2">
 <h2>Process the data</h2>
-<p>Make classe variable in training dataset factor</p>
+<p>Make the classe variable in training dataset factor</p>
 <pre class="r"><code>traindata$classe &lt;- as.factor(traindata$classe)</code></pre>
 <p>Get rid of columns with all NAs</p>
 <pre class="r"><code>traindata &lt;- traindata[,complete.cases(t(traindata))]
@@ -84,12 +86,29 @@ testdata &lt;- testdata[,-c(1:7)]</code></pre>
 </div>
 <div id="fit-a-model-to-the-processed-training-data" class="section level2">
 <h2>Fit a model to the processed training data</h2>
-<p>Create a model with random forest for a better than linear regression model</p>
+<p>Create a model with randomForest() for a better than linear regression model. I was unable to use the train function with the random forest methodology because it simply took way too long to process.</p>
 <pre class="r"><code>library(&quot;randomForest&quot;)</code></pre>
-<pre><code>## Warning: package 'randomForest' was built under R version 3.1.1</code></pre>
 <pre><code>## randomForest 4.6-10
 ## Type rfNews() to see new features/changes/bug fixes.</code></pre>
 <pre class="r"><code>modFit &lt;- randomForest(classe ~ ., data=traindata)</code></pre>
+<p>If we explore the basic confusion matrix of our model:</p>
+<pre class="r"><code>modFit</code></pre>
+<pre><code>## 
+## Call:
+##  randomForest(formula = classe ~ ., data = traindata) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 7
+## 
+##         OOB estimate of  error rate: 0.3%
+## Confusion matrix:
+##      A    B    C    D    E class.error
+## A 5578    1    0    0    1   0.0003584
+## B   11 3784    2    0    0   0.0034238
+## C    0   13 3407    2    0   0.0043834
+## D    0    0   21 3193    2   0.0071517
+## E    0    0    2    4 3601   0.0016634</code></pre>
+<p>We can see that based on our training sample, we have a very well correlated and robust model with an error rate of 0.31% using 500 trees with 7 variables tried at each split.</p>
 <p>Create character vector of predictions</p>
 <pre class="r"><code>predictions &lt;- predict(modFit,testdata)
 predictions &lt;- as.character(predictions)</code></pre>

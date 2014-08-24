@@ -8,7 +8,13 @@ output: html_document
 #Summary
 This project requires you to dive into a large dataset of exercise enthusiasts and create a model based on this data in order to determine what type of exercise an individual is doing based on the data that is being created by their human activity monitor.
 
+I created my model with the randomForest() function in order to have a more robust solution compared to a linear regression approach. My resulting methodology resulted in a robust model with an estimated error rate of 0.31% using 500 trees with 7 variables tried at each split.
+
+
+
 ##Download the data and libraries
+In order to work with the data, we needed to make sure the correct values in each column that were NA's were actually read as NA's and that none of the columns that were not supposed to be factors were not read as such. 
+
 ```{r}
 library(data.table)
 traindata <- read.csv("pml-training.csv", stringsAsFactors=FALSE, na.strings=c("NA",""))
@@ -16,34 +22,46 @@ testdata <- read.csv("pml-testing.csv", stringsAsFactors=FALSE, na.strings=c("NA
 ```
 
 ##Process the data
-Make classe variable in training dataset factor
+Make the classe variable in training dataset factor
+
 ```{r}
 traindata$classe <- as.factor(traindata$classe)
 ```
 
 Get rid of columns with all NAs
+
 ```{r}
 traindata <- traindata[,complete.cases(t(traindata))]
 testdata <- testdata[,complete.cases(t(testdata))]
 ```
 
 Get rid of columns that are not measurements
+
 ```{r}
 traindata <- traindata[,-c(1:7)]
 testdata <- testdata[,-c(1:7)]
 ```
 
 Remove rows in train set with NAs if any
+
 ```{r}
 traindata <- traindata[complete.cases(traindata),]
 ```
 
 ##Fit a model to the processed training data
-Create a model with random forest for a better than linear regression model
+Create a model with randomForest() for a better than linear regression model. I was unable to use the train function with the random forest methodology because it simply took way too long to process.
+
 ```{r, warning=FALSE}
 library("randomForest")
 modFit <- randomForest(classe ~ ., data=traindata)
 ```
+
+If we explore the basic confusion matrix of our model:
+```{r}
+modFit
+```
+
+We can see that based on our training sample, we have a very well correlated and robust model with an error rate of 0.31% using 500 trees with 7 variables tried at each split.
 
 Create character vector of predictions
 ```{r}
