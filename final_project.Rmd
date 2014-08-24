@@ -8,7 +8,7 @@ output: html_document
 #Summary
 This project requires you to dive into a large dataset of exercise enthusiasts and create a model based on this data in order to determine what type of exercise an individual is doing based on the data that is being created by their human activity monitor.
 
-##Download the data
+##Download the data and libraries
 ```{r}
 library(data.table)
 traindata <- read.csv("pml-training.csv", stringsAsFactors=FALSE, na.strings=c("NA",""))
@@ -41,6 +41,7 @@ traindata <- traindata[complete.cases(traindata),]
 ##Fit a model to the processed training data
 Create a model with random forest for a better than linear regression model
 ```{r}
+library("randomForest")
 modFit <- randomForest(classe ~ ., data=traindata)
 ```
 
